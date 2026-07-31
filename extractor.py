@@ -1,6 +1,7 @@
 import os
 import time
 import requests
+import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import instaloader
@@ -13,6 +14,7 @@ class InstagramExtractor:
     def __init__(self, output_dir: str = "descargas", login_username: str = None):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.login_username = login_username
         
         self.L = instaloader.Instaloader(
             download_pictures=False,
@@ -22,25 +24,24 @@ class InstagramExtractor:
             download_comments=False,
             save_metadata=False,
             compress_json=False,
-            max_connection_attempts=3
+            max_connection_attempts=1
         )
 
-        session_loaded = False
+        self.session_loaded = False
         if login_username:
             try:
                 self.L.load_session_from_file(login_username)
                 print(f"✓ Sesión previa cargada correctamente para: {login_username}")
-                session_loaded = True
+                self.session_loaded = True
             except Exception:
-                print(f"⚠️ No se encontró archivo de sesión guardado para '{login_username}'.")
-                print(f"Iniciando sesión interactiva para guardar sesión...")
+                print(f"\n🔑 Iniciando autenticación en Instagram para el usuario: '{login_username}'...")
                 try:
                     self.L.interactive_login(login_username)
                     self.L.save_session_to_file()
-                    print(f"✓ Sesión guardada exitosamente.")
-                    session_loaded = True
+                    print(f"✓ Sesión guardada exitosamente en el equipo.")
+                    self.session_loaded = True
                 except Exception as e:
-                    print(f"❌ Error al iniciar sesión: {e}")
+                    print(f"❌ Error durante el inicio de sesión: {e}")
         else:
             # Buscar si existe alguna sesión previa guardada localmente
             session_files = list(Path.home().glob(".config/instaloader/session-*")) + \
@@ -50,12 +51,9 @@ class InstagramExtractor:
                 try:
                     self.L.load_session_from_file(session_username)
                     print(f"✓ Sesión cargada automáticamente para el usuario: {session_username}")
-                    session_loaded = True
+                    self.session_loaded = True
                 except Exception:
                     pass
-
-        if not session_loaded:
-            print("ℹ️ Nota: Ejecutando sin sesión iniciada. Si recibes error HTTP 429 (Too Many Requests), ejecuta el script especificando tu usuario con: python main.py -l TU_USUARIO_IG")
 
     def extract_recent_posts(self, target_profile: str, days: int = 30):
         """
@@ -64,16 +62,23 @@ class InstagramExtractor:
         cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
         print(f"\nBusca de publicaciones de '@{target_profile}' desde {cutoff_date.strftime('%Y-%m-%d')} ({days} días)...")
 
+        # Método 1: Instaloader
         try:
             profile = instaloader.Profile.from_username(self.L.context, target_profile)
-        except instaloader.exceptions.QueryReturned429Exception:
-            print(f"\n❌ Error HTTP 429 (Too Many Requests): Instagram ha limitado las consultas anónimas.")
-            print(f"👉 Solución: Inicia sesión ejecutando:\n   python main.py -u {target_profile} -l TU_USUARIO_INSTAGRAM\n")
-            return 0
+            return self._extract_with_instaloader(profile, cutoff_date, target_profile)
         except Exception as e:
-            print(f"❌ Error al consultar el perfil '{target_profile}': {e}")
-            return 0
+            if "429" in str(e) or "Too Many Requests" in str(e):
+                print(f"\n⚠️ Instagram bloqueó la consulta anónima (HTTP 429).")
+                if not self.session_loaded:
+                    print(f"👉 Solución: Debes autenticarte ejecutando el script con tu usuario de Instagram:")
+                    print(f"   python main.py -u {target_profile} -l TU_USUARIO_INSTAGRAM\n")
+            else:
+                print(f"❌ Error al consultar perfil con Instaloader: {e}")
+            
+            # Intento de fallback con yt-dlp si está disponible
+            return self._extract_with_ytdlp(target_profile, cutoff_date)
 
+    def _extract_with_instaloader(self, profile, cutoff_date, target_profile):
         posts_processed = 0
         posts_downloaded = 0
 
@@ -123,12 +128,16 @@ class InstagramExtractor:
                     self._download_file(url, dest_path)
 
                 posts_downloaded += 1
-                time.sleep(1) # Pausa prudencial entre publicaciones
+                time.sleep(2)
 
-        except instaloader.exceptions.QueryReturned429Exception:
-            print(f"\n⚠️ Instagram bloqueó temporalmente por límite de peticiones (HTTP 429).")
-            print(f"Se guardaron {posts_downloaded} publicaciones antes del límite.")
-            print(f"👉 Para evitar este límite, inicia sesión ejecutando:\n   python main.py -u {target_profile} -l TU_USUARIO_INSTAGRAM\n")
+        except Exception as e:
+            if "429" in str(e):
+                print(f"\n⚠️ Instagram pausó la descarga por límite de peticiones (429).")
+                print(f"Se guardaron {posts_downloaded} publicaciones.")
+                if not self.session_loaded:
+                    print(f"👉 Inicia sesión con: python main.py -u {target_profile} -l TU_USUARIO_INSTAGRAM")
+            else:
+                print(f"⚠️ Aviso durante descarga: {e}")
 
         print(f"\n==========================================")
         print(f"✓ Proceso completado.")
@@ -136,6 +145,60 @@ class InstagramExtractor:
         print(f"✓ Guardado en: {self.output_dir.resolve()}")
         print(f"==========================================\n")
         return posts_downloaded
+
+    def _extract_with_ytdlp(self, target_profile: str, cutoff_date: datetime):
+        print(f"\nIntentando extracción alternativa para @{target_profile}...")
+        try:
+            import yt_dlp
+        except ImportError:
+            print("yt-dlp no está instalado.")
+            return 0
+
+        ydl_opts = {
+            'extract_flat': True,
+            'skip_download': True,
+            'quiet': True,
+        }
+        url = f"https://www.instagram.com/{target_profile}/"
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                if not info or 'entries' not in info:
+                    print("No se encontraron entradas públicas.")
+                    return 0
+
+                posts_downloaded = 0
+                for entry in info['entries']:
+                    if not entry:
+                        continue
+                    post_id = entry.get('id', '')
+                    if not post_id:
+                        continue
+                    
+                    post_dir = self.output_dir / post_id
+                    post_dir.mkdir(parents=True, exist_ok=True)
+
+                    caption = entry.get('description', '') or entry.get('title', '')
+                    with open(post_dir / "texto.txt", "w", encoding="utf-8") as f:
+                        f.write(caption)
+
+                    media_dir = post_dir / "multimedia"
+                    media_dir.mkdir(parents=True, exist_ok=True)
+
+                    # Descargar contenido directo
+                    post_url = entry.get('url') or f"https://www.instagram.com/p/{post_id}/"
+                    ydl_down_opts = {
+                        'outtmpl': str(media_dir / '%(title)s_%(id)s.%(ext)s'),
+                        'quiet': True
+                    }
+                    with yt_dlp.YoutubeDL(ydl_down_opts) as ydl_down:
+                        ydl_down.download([post_url])
+                    posts_downloaded += 1
+
+                return posts_downloaded
+        except Exception as e:
+            print(f"❌ Extracción alternativa con yt-dlp finalizada: {e}")
+            return 0
 
     def _download_file(self, url: str, dest_path: Path):
         try:
@@ -151,4 +214,3 @@ class InstagramExtractor:
             print(f"  └─ 📁 Guardado multimedia: multimedia/{dest_path.name}")
         except Exception as e:
             print(f"  └─ ⚠️ Error al descargar multimedia ({dest_path.name}): {e}")
-
