@@ -1,5 +1,4 @@
-instaloader>=4.10
-tqdm>=4.66.0
+instagrapi>=2.18.12
+pydantic>=2.12.5
 requests>=2.31.0
-yt-dlp>=2026.1.1
-
+tqdm>=4.66.0
