@@ -1,0 +1,60 @@
+{
+    "uuids": {
+        "phone_id": "e0b6c383-68e8-46c5-8648-89ac67ae7216",
+        "uuid": "3972f4da-19cc-493a-91de-6b8ca2e659c8",
+        "client_session_id": "b4104c2c-eaa2-4883-8790-9f6f19bd25b2",
+        "advertising_id": "776f1da6-265a-4f8a-9643-773f0bd972a0",
+        "android_device_id": "android-3301783c8aa7078e",
+        "request_id": "88b9ade3-ee96-416d-bf32-2a4f381d32ac",
+        "tray_session_id": "d28dfec2-b3f6-4ba6-8206-38d44c3576a5"
+    },
+    "mid": null,
+    "ig_u_rur": null,
+    "ig_www_claim": null,
+    "authorization_data": {
+        "ds_user_id": "30880430",
+        "sessionid": "30880430%3APJ9enJxXS9cZrU%3A4%3AAYjMBukHNerAYG116YGg7x2P4decfvZMUk8ico7sAA",
+        "should_use_header_over_cookies": true
+    },
+    "cookies": {
+        "sessionid": "30880430%3APJ9enJxXS9cZrU%3A4%3AAYjMBukHNerAYG116YGg7x2P4decfvZMUk8ico7sAA",
+        "ds_user_id": "30880430",
+        "rur": "ATG%2C17841400972900482%2C1786762064%3A01ff5f6b36b75db8c6912a9c47b355880f4e3ce882575217deb336c0a0924c7ebbcc6813"
+    },
+    "last_login": null,
+    "device_settings": {
+        "android_version": 34,
+        "android_release": "14",
+        "dpi": "480dpi",
+        "resolution": "1344x2992",
+        "manufacturer": "Google/google",
+        "device": "husky",
+        "model": "Pixel 8 Pro",
+        "cpu": "husky",
+        "app_version": "428.0.0.47.67",
+        "version_code": "961145276",
+        "bloks_versioning_id": "7189b949425f9bf80ea8bd880cf5a3080b292d9b1c4b38a18d112f7c4b71e7a8"
+    },
+    "user_agent": "Instagram 428.0.0.47.67 Android (34/14; 480dpi; 1344x2992; Google/google; Pixel 8 Pro; husky; husky; en_US; 961145276)",
+    "country": "US",
+    "country_code": 1,
+    "locale": "en_US",
+    "timezone_offset": -14400,
+    "timezone_name": "GMT-04:00",
+    "push_disabled": true,
+    "request_timeout": 1,
+    "public_request_retries_count": 3,
+    "public_request_retries_timeout": 2,
+    "session_retry_total": 3,
+    "session_retry_backoff_factor": 2,
+    "session_retry_statuses": [
+        429,
+        500,
+        502,
+        503,
+        504
+    ],
+    "public_transport": "requests",
+    "public_transport_impersonate": "chrome136",
+    "tls_verify": true
+}
