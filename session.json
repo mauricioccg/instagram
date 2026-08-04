@@ -1,25 +1,25 @@
 {
     "uuids": {
-        "phone_id": "85d0c5e5-2e1c-4193-9301-400c62b92c0d",
-        "uuid": "7ec323ef-6124-4565-9559-569465815f3d",
-        "client_session_id": "58d3bcd4-98f0-4227-8a59-69866e2b005f",
-        "advertising_id": "fccb3fcb-814c-42d6-b683-5cd5de96decc",
-        "android_device_id": "android-5d4befd7458365c8",
-        "request_id": "8a455b96-50dc-42d7-bff9-0b07e173e119",
-        "tray_session_id": "66bbe59a-b929-4fbe-83a1-18510287ebe7"
+        "phone_id": "c2d3cba3-fcbd-45bc-97cd-87b3b65feb97",
+        "uuid": "1f423e7b-a42f-446f-8480-43ef11b32c4a",
+        "client_session_id": "3f0a7644-cd1f-426a-a61f-561573cf4f87",
+        "advertising_id": "1b2c045d-04dc-40c8-9325-f33d8eadf3b4",
+        "android_device_id": "android-346a9df8d40e95df",
+        "request_id": "7fd88ac5-2d8a-4eec-b895-d08522781319",
+        "tray_session_id": "89734987-1d6d-47ae-bd0a-0450f166723a"
     },
     "mid": null,
     "ig_u_rur": null,
     "ig_www_claim": null,
     "authorization_data": {
         "ds_user_id": "30880430",
-        "sessionid": "30880430%3A53cdbRdUGBNU4q%3A11%3AAYgeoWBHfp-Tb15OXt_GZRUnMJG9SPrLubLmPbS0hw",
+        "sessionid": "30880430%3APJ9enJxXS9cZrU%3A4%3AAYjNJwKxIAuBPay52b0iYvqpIumIvtw_iTutpHKs5Q",
         "should_use_header_over_cookies": true
     },
     "cookies": {
-        "sessionid": "30880430%3A53cdbRdUGBNU4q%3A11%3AAYgeoWBHfp-Tb15OXt_GZRUnMJG9SPrLubLmPbS0hw",
+        "sessionid": "30880430%3APJ9enJxXS9cZrU%3A4%3AAYjNJwKxIAuBPay52b0iYvqpIumIvtw_iTutpHKs5Q",
         "ds_user_id": "30880430",
-        "rur": "ATG%2C17841400972900482%2C1787019391%3A01ff8d658cd88ae6680beef81fa40b12368c2dd04761bd7b5fa16cf8fb00dede53bc526e"
+        "rur": "ATG%2C17841400972900482%2C1787069059%3A01ffee567c7c1080a6aa8f0004f521e5c6cdbb288624682063bf40d389859300c4e84e52"
     },
     "last_login": null,
     "device_settings": {
