@@ -8,11 +8,11 @@ Cada publicación del último mes se guarda en la carpeta de descargas con la si
 
 ```text
 descargas/
- └── [ID_PUBLICACION]/
-      ├── texto.txt             # Texto / Descripción (caption) de la publicación
-      └── multimedia/           # Fotos y vídeos pertenecientes a la publicación
-           ├── foto_01.jpg
-           ├── video_01.mp4
+ └── [NOMBRE_PERFIL]/
+      └── [ID_PUBLICACION]/
+           ├── texto.txt             # Texto / Descripción (caption) de la publicación
+           ├── foto_01.jpg           # Fotos pertenecientes a la publicación
+           ├── video_01.mp4          # Vídeos pertenecientes a la publicación
            └── ...
 ```
 

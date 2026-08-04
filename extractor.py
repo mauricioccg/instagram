@@ -56,6 +56,9 @@ class InstagramExtractor:
             print(f"   python login.py\n")
             return 0
 
+        profile_dir = self.output_dir / target_profile
+        profile_dir.mkdir(parents=True, exist_ok=True)
+
         posts_processed = 0
         posts_downloaded = 0
 
@@ -74,7 +77,7 @@ class InstagramExtractor:
 
                 posts_processed += 1
                 post_id = str(media.pk)
-                post_dir = self.output_dir / post_id
+                post_dir = profile_dir / post_id
                 post_dir.mkdir(parents=True, exist_ok=True)
 
                 print(f"\n[Publicación #{posts_processed}] ID: {post_id} | Fecha: {taken_at.strftime('%Y-%m-%d %H:%M')}")
@@ -86,10 +89,7 @@ class InstagramExtractor:
                     f.write(caption_text)
                 print(f"  └─ 📝 Guardado texto en: {caption_file.name}")
 
-                # 2. Guardar las fotos y vídeos en la subcarpeta 'multimedia'
-                media_dir = post_dir / "multimedia"
-                media_dir.mkdir(parents=True, exist_ok=True)
-
+                # 2. Guardar las fotos y vídeos directamente en la carpeta de la publicación
                 media_items = []
                 if media.media_type == 8 and media.resources:
                     # Carrusel
@@ -108,7 +108,7 @@ class InstagramExtractor:
                 for idx, (m_type, url) in enumerate(media_items, start=1):
                     ext = ".mp4" if m_type == 'video' else ".jpg"
                     filename = f"{m_type}_{idx:02d}{ext}"
-                    dest_path = media_dir / filename
+                    dest_path = post_dir / filename
                     self._download_file(url, dest_path)
 
                 posts_downloaded += 1
@@ -120,7 +120,7 @@ class InstagramExtractor:
         print(f"\n==========================================")
         print(f"✓ Proceso completado.")
         print(f"✓ Publicaciones extraídas: {posts_downloaded}")
-        print(f"✓ Guardado en: {self.output_dir.resolve()}")
+        print(f"✓ Guardado en: {profile_dir.resolve()}")
         print(f"==========================================\n")
         return posts_downloaded
 
@@ -135,6 +135,6 @@ class InstagramExtractor:
                 for chunk in resp.iter_content(chunk_size=8192):
                     if chunk:
                         f.write(chunk)
-            print(f"  └─ 📁 Guardado multimedia: multimedia/{dest_path.name}")
+            print(f"  └─ 📁 Guardado multimedia: {dest_path.name}")
         except Exception as e:
             print(f"  └─ ⚠️ Error al descargar multimedia ({dest_path.name}): {e}")
